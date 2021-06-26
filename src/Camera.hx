@@ -1,6 +1,8 @@
 import en.Entity;
 
 class Camera extends dn.Process {
+	var game(get, never) : Game; inline function get_game() return Game.ME;
+
 	/** Camera focus coord in level pixels. This is the raw camera location: the displayed camera location might be clamped to level bounds. **/
 	public var focus : LPoint;
 
@@ -8,11 +10,11 @@ class Camera extends dn.Process {
 
 	/** Width of viewport in level pixels **/
 	public var pxWid(get, never) : Int;
-	function get_pxWid() return M.ceil(Game.ME.w() / Const.SCALE);
+	function get_pxWid() return M.ceil(game.w() / Const.SCALE);
 
 	/** Height of viewport in level pixels **/
 	public var pxHei(get, never) : Int;
-	function get_pxHei() return M.ceil(Game.ME.h() / Const.SCALE);
+	function get_pxHei() return M.ceil(game.h() / Const.SCALE);
 
 	public var frict = 0.89;
 	public var bumpFrict = 0.75;
@@ -46,7 +48,7 @@ class Camera extends dn.Process {
 	inline function get_bottom() return top + pxHei - 1;
 
 	public function new() {
-		super(Game.ME);
+		super(game);
 		focus = LPoint.fromCase(0, 0);
 		dx = dy = 0;
 		apply();
@@ -74,9 +76,9 @@ class Camera extends dn.Process {
 		}
 	}
 
-	public inline function scrollerToGlobalX(v : Float) return v * Game.ME.scroller.scaleX + Game.ME.scroller.x;
+	public inline function scrollerToGlobalX(v : Float) return v * game.scroller.scaleX + game.scroller.x;
 
-	public inline function scrollerToGlobalY(v : Float) return v * Game.ME.scroller.scaleY + Game.ME.scroller.y;
+	public inline function scrollerToGlobalY(v : Float) return v * game.scroller.scaleY + game.scroller.y;
 
 	public function shakeS(t : Float, ?pow = 1.0) {
 		cd.setS("shaking", t, false);
@@ -95,8 +97,8 @@ class Camera extends dn.Process {
 
 	/** Apply camera values to Game scroller **/
 	function apply() {
-		var level = Game.ME.level;
-		var scroller = Game.ME.scroller;
+		var level = game.level;
+		var scroller = game.scroller;
 
 		// Update scroller
 		if (!clampToLevelBounds || pxWid < level.pxWid)
