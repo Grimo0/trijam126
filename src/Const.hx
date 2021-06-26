@@ -17,7 +17,7 @@ class Const {
 	public static var SCALE = 1.0; // ignored if auto-scaling
 	public static var UI_SCALE = 1.0; // ignored if auto-scaling
 
-	public static var GRID(default, set) = 64.;
+	public static var GRID(default, set) = 64;
 	static inline function set_GRID(s) {
 		GRID = s;
 		update_SCALE();
