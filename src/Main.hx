@@ -61,7 +61,7 @@ class Main extends dn.Process {
 
 		// Start
 		hxd.Timer.skip();
-		delayer.addF(startMainMenu, 1);
+		delayer.addF(startGame, 1);
 
 		#if debug
 		debug = true;
