@@ -25,7 +25,9 @@ class Main extends dn.Process {
 		engine.fullScreen = true;
 		#end
 
+		#if hl
 		sys.FileSystem.createDirectory('save');
+		#end
 
 		// Assets & data init
 		hxd.snd.Manager.get(); // force sound manager init on startup instead of first sound play
@@ -48,12 +50,13 @@ class Main extends dn.Process {
 		controller.bind(START, Key.ESCAPE);
 
 		// Focus helper (process that suspend the game when the focus is lost)
-		new GameFocusHelper();
+		// new GameFocusHelper();
 
 		// Options loading
 		new Options();
 		Options.ME.load();
 
+		Game.sav.init();
 		Game.load();
 
 		// Start

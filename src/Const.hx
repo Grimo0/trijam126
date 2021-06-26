@@ -17,33 +17,42 @@ class Const {
 	public static var SCALE = 1.0; // ignored if auto-scaling
 	public static var UI_SCALE = 1.0; // ignored if auto-scaling
 
-	public static var GRID(default, set) = 16.;
+	public static var GRID(default, set) = 64.;
 	static inline function set_GRID(s) {
 		GRID = s;
 		update_SCALE();
 		return GRID;
 	}
-	public static var MAX_CELLS_PER_WIDTH(default, set) = 14;
+	public static var MAX_CELLS_PER_WIDTH(default, set) = -1;
 	static inline function set_MAX_CELLS_PER_WIDTH(s) {
 		MAX_CELLS_PER_WIDTH = s;
 		update_SCALE();
 		return MAX_CELLS_PER_WIDTH;
+	}
+	public static var MAX_CELLS_PER_HEIGHT(default, set) = 8;
+	static inline function set_MAX_CELLS_PER_HEIGHT(s) {
+		MAX_CELLS_PER_HEIGHT = s;
+		update_SCALE();
+		return MAX_CELLS_PER_HEIGHT;
 	}
 
 	/** Viewport scaling **/
 	static public function update_SCALE() {
 		if (MAX_CELLS_PER_WIDTH > 0)
 			SCALE = dn.heaps.Scaler.getViewportWidth() / (MAX_CELLS_PER_WIDTH * GRID);
+		else if (MAX_CELLS_PER_HEIGHT > 0)
+			SCALE = dn.heaps.Scaler.getViewportHeight() / (MAX_CELLS_PER_HEIGHT * GRID);
 		else if (SCALE_AUTO_CWID > 0)
 			SCALE = M.ceil(dn.heaps.Scaler.getViewportWidth() / SCALE_AUTO_CWID);
 		else if (SCALE_AUTO_CHEI > 0)
 			SCALE = M.ceil(dn.heaps.Scaler.getViewportHeight() / SCALE_AUTO_CHEI);
-		// can be replaced with another way to determine the game scaling
-		SCALE = dn.heaps.Scaler.bestFit_i(1280, 720);
+		else
+			// can be replaced with another way to determine the game scaling
+			SCALE = dn.heaps.Scaler.bestFit_i(1280, 720);
 	}
 
 	/** Specific scaling for top UI elements **/
-	static inline function update_UI_SCALE() {
+	static public function update_UI_SCALE() {
 		// can be replaced with another way to determine the UI scaling
 		UI_SCALE = SCALE;
 	}

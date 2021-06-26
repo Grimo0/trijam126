@@ -56,6 +56,7 @@ class Boot extends hxd.App {
 		#end
 
 		Const.update_SCALE();
+		Const.update_UI_SCALE();
 
 		dn.Process.resizeAll();
 	}
