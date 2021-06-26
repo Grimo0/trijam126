@@ -25,7 +25,14 @@ class Game extends Process {
 	/** UI **/
 	public var hud : ui.Hud;
 
-	public var locked = false;
+	public var locked(default, set) = false;
+	public function set_locked(l) {
+		if (l)
+			ca.lock();
+		else
+			ca.unlock();
+		return locked = l;
+	}
 	public var started(default, null) = false;
 	
 	public var pxWid(get, never) : Int;
