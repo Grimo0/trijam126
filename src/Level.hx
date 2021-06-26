@@ -9,9 +9,13 @@ class Level extends dn.Process {
 	public var pxWid(get, never) : Int; inline function get_pxWid() return game.pxWid;
 	public var pxHei(get, never) : Int; inline function get_pxHei() return game.pxHei;
 
+	var bgCols = new Array<h2d.Bitmap>();
+
 	public function new() {
 		super(game);
 		createRootInLayers(game.scroller, Const.GAME_SCROLLER_LEVEL);
+		bgCols.push(new h2d.Bitmap(h2d.Tile.fromColor(0xffeeee)));
+		bgCols.push(new h2d.Bitmap(h2d.Tile.fromColor(0xeeeeff)));
 	}
 
 	public inline function isValid(cx, cy) return cx >= 0 && cx < cWid && cy >= 0 && cy < cHei;
@@ -34,5 +38,20 @@ class Level extends dn.Process {
 	public function initLevel() {
 		game.scroller.add(root, Const.GAME_SCROLLER_LEVEL);
 		root.removeChildren();
+
+		for (c in bgCols)
+			root.addChildAt(c, Const.GAME_LEVEL_BG);
+	}
+
+	override function onResize() {
+		super.onResize();
+		var bgColW = M.ceil(pxWid / bgCols.length);
+		var bgColX = 0.;
+		for (c in bgCols) {
+			c.scaleX = bgColW;
+			c.scaleY = pxHei;
+			c.x = bgColX;
+			bgColX += bgColW;
+		}
 	}
 }

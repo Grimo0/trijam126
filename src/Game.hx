@@ -1,6 +1,6 @@
+import en.Character;
 import en.Entity;
 import dn.Process;
-import hxd.Key;
 
 class Game extends Process {
 	public static var ME : Game;
@@ -46,6 +46,10 @@ class Game extends Process {
 
 	var flags : Map<String, Int> = new Map();
 
+	var chars : Array<Character> = new Array();
+	var giver : Character;
+	var receiver : Character;
+
 	public function new() {
 		super(Main.ME);
 		ME = this;
@@ -66,6 +70,8 @@ class Game extends Process {
 		level = new Level();
 		fx = new Fx();
 		hud = new ui.Hud();
+
+		chars.push(new Character('tmp'));
 
 		root.alpha = 0;
 		start();
@@ -99,28 +105,36 @@ class Game extends Process {
 
 		scroller.removeChildren();
 
+		level.init();
+
+		for (c in chars) {
+			level.root.add(c, Const.GAME_LEVEL_ENTITIES);
+		}
+
+		transition();
+
 		resume();
 		Process.resizeAll();
 	}
 
-	public function transition(levelUID : Null<Int>, event : String = null, ?onDone : Void->Void) {
+	function startDonation() {
+		giver = chars[0];
+		giver.x = pxWid / 4 - giver.width / 2;
+		giver.y = (pxHei - giver.height) / 2;
+	}
+
+	public function transition(event : String = null, ?onDone : Void->Void) {
 		locked = true;
 
 		Main.ME.tw.createS(root.alpha, 0, #if debug 0 #else 1 #end).onEnd = function() {
-			if (levelUID == null) {
-				save();
+			startDonation();
 
-				Main.ME.startMainMenu();
-			} else {
-				save();
-
-				start();
-
-				Main.ME.tw.createS(root.alpha, 1, #if debug 0 #else 1 #end);
-			}
+			Main.ME.tw.createS(root.alpha, 1, #if debug 0 #else 1 #end);
 
 			if (onDone != null)
 				onDone();
+			
+			locked = false;
 		}
 	}
 
