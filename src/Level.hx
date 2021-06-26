@@ -1,6 +1,5 @@
 class Level extends dn.Process {
 	var game(get, never) : Game; inline function get_game() return Game.ME;
-	var fx(get, never) : Fx; inline function get_fx() return game.fx;
 
 	public var currLevel(default, set) : LDtkMap.LDtkMap_Level;
 	public function set_currLevel(l : LDtkMap.LDtkMap_Level) {
@@ -49,29 +48,8 @@ class Level extends dn.Process {
 			var background = currLevel.getBgBitmap();
 			root.add(background, Const.GAME_LEVEL_BG);
 		}
-
-		// Floor
-		root.add(currLevel.l_Floor.render(), Const.GAME_LEVEL_FLOOR);
-
-		// Player
-		for (p in currLevel.l_Entities.getAllUntyped()) { // TODO: Change getAllUntyped for your alls
-			// Read h2d.Tile
-			var tileset = Assets.world.tilesets.get(p.defaultTileInfos.tilesetUid);
-			if (tileset == null)
-				continue;
-			var tile = tileset.getFreeTile(p.defaultTileInfos.x, p.defaultTileInfos.y, p.defaultTileInfos.w, p.defaultTileInfos.h);
-			if (tile == null)
-				continue;
-
-			// Create the entity
-			var pEnt = new en.Entity(Assets.entities);
-			pEnt.spr.tile.switchTexture(tile);
-			pEnt.spr.tile.setPosition(tile.x, tile.y);
-			pEnt.spr.tile.setSize(tile.width, tile.height);
-			pEnt.spr.tile.setCenterRatio(p.pivotX, p.pivotY);
-			pEnt.spr.tile.scaleToSize(p.width, p.height);
-			pEnt.setPosCell(p.cx, p.cy);
-		};
+		
+		// TODO Level loading & rendering
 	}
 
 	override function onResize() {

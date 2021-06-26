@@ -11,7 +11,6 @@ class Assets {
 	public static var ui : SpriteLib;
 	public static var fx : SpriteLib;
 	public static var entities : SpriteLib;
-	public static var decor : SpriteLib;
 
 	public static var world : LDtkMap;
 
@@ -59,7 +58,6 @@ class Assets {
 		ui = dn.heaps.assets.Atlas.load("atlas/ui.atlas");
 		fx = dn.heaps.assets.Atlas.load("atlas/fx.atlas");
 		entities = dn.heaps.assets.Atlas.load("atlas/entities.atlas");
-		decor = dn.heaps.assets.Atlas.load("atlas/decor.atlas");
 
 		world = new LDtkMap();
 	}
