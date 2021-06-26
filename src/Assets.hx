@@ -12,8 +12,6 @@ class Assets {
 	public static var fx : SpriteLib;
 	public static var entities : SpriteLib;
 
-	public static var world : LDtkMap;
-
 	static var initDone = false;
 
 	public static function init() {
@@ -29,23 +27,6 @@ class Assets {
 		hxd.Res.initEmbed();
 		#end
 
-		// Hot reloading
-		#if debug
-		hxd.res.Resource.LIVE_UPDATE = true;
-		hxd.Res.data.watch(function() {
-			Main.ME.delayer.cancelById("cdb");
-
-			Main.ME.delayer.addS("cdb", function() {
-				Data.load(hxd.Res.data.entry.getBytes().toString());
-				if (Game.ME != null)
-					Game.ME.onCdbReload();
-			}, 0.2);
-		});
-		#end
-
-		// -- Database
-		Data.load(hxd.Res.data.entry.getText());
-
 		// -- Fonts
 		fontPixel = hxd.Res.fonts.minecraftiaOutline.toFont();
 		fontTiny = hxd.Res.fonts.barlow_condensed_medium_regular_9.toFont();
@@ -58,7 +39,5 @@ class Assets {
 		ui = dn.heaps.assets.Atlas.load("atlas/ui.atlas");
 		fx = dn.heaps.assets.Atlas.load("atlas/fx.atlas");
 		entities = dn.heaps.assets.Atlas.load("atlas/entities.atlas");
-
-		world = new LDtkMap();
 	}
 }

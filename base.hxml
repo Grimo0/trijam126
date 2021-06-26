@@ -1,7 +1,5 @@
 -cp src
--lib castle
 -lib heaps
 -lib deepnightLibs
--lib ldtk-haxe-api
 -main Boot
 -dce full

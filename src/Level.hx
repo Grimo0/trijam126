@@ -1,21 +1,13 @@
 class Level extends dn.Process {
 	var game(get, never) : Game; inline function get_game() return Game.ME;
 
-	public var currLevel(default, set) : LDtkMap.LDtkMap_Level;
-	public function set_currLevel(l : LDtkMap.LDtkMap_Level) {
-		currLevel = l;
-		Const.GRID = gridSize;
-		initLevel();
-		return currLevel;
-	}
-
 	public var gridSize(get, never) : Int;
-	inline function get_gridSize() return currLevel.l_Floor.gridSize;
+	inline function get_gridSize() return Const.GRID;
 
-	public var cWid(get, never) : Int; inline function get_cWid() return currLevel.l_Floor.cWid;
-	public var cHei(get, never) : Int; inline function get_cHei() return currLevel.l_Floor.cHei;
-	public var pxWid(get, never) : Int; inline function get_pxWid() return currLevel.pxWid;
-	public var pxHei(get, never) : Int; inline function get_pxHei() return currLevel.pxHei;
+	public var cWid(get, never) : Int; inline function get_cWid() return Std.int(pxWid / Const.GRID);
+	public var cHei(get, never) : Int; inline function get_cHei() return Std.int(pxHei / Const.GRID);
+	public var pxWid(get, never) : Int; inline function get_pxWid() return game.pxWid;
+	public var pxHei(get, never) : Int; inline function get_pxHei() return game.pxHei;
 
 	public function new() {
 		super(game);
@@ -30,7 +22,7 @@ class Level extends dn.Process {
 		return false; // TODO: collision with entities and obstacles
 
 	public inline function getFloor(cx, cy) : Int
-		return currLevel.l_Floor.getInt(cx, cy);
+		return 0;
 
 	override function init() {
 		super.init();
@@ -42,27 +34,5 @@ class Level extends dn.Process {
 	public function initLevel() {
 		game.scroller.add(root, Const.GAME_SCROLLER_LEVEL);
 		root.removeChildren();
-
-		// Get level background image
-		if (currLevel.hasBgImage()) {
-			var background = currLevel.getBgBitmap();
-			root.add(background, Const.GAME_LEVEL_BG);
-		}
-		
-		// TODO Level loading & rendering
-	}
-
-	override function onResize() {
-		if (currLevel == null)
-			return;
-		super.onResize();
-	}
-
-	public function render() {}
-
-	override function postUpdate() {
-		super.postUpdate();
-
-		render();
 	}
 }
