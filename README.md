@@ -1,13 +1,14 @@
 # About
 
-Base structure for my games forked from (https://github.com/deepnight/gameBase).
+**Blood donation** was made for the [Trijam #126](https://itch.io/jam/trijam-126)
+It uses the same base structure as in all my games (https://github.com/grimo0/gameBase) which is a fork from @deepnight's one.
 The language is **Haxe** (https://haxe.org).
 Builds are done with **Hashlink** (https://hashlink.haxe.org), a virtual machine, working on all platforms. 
 And using **Heaps** (https://heaps.io), a 2D/3D Haxe library (*ie.* an Haxelib). All of those tools are free and open-source.
 
 # Installation & usage
 
-- First you can follow points 1 to 5 of this tutorial from *Sébastien Bénard* : https://deepnight.net/tutorial/a-quick-guide-to-installing-haxe/
+- First you can follow points 1 to 5 of this tutorial from *@deepnight* : https://deepnight.net/tutorial/a-quick-guide-to-installing-haxe/
 - Install libs as follow : 
 	- `haxelib git deepnightLibs https://github.com/deepnight/deepnightLibs.git`
 	- `haxelib git castle https://github.com/ncannasse/castle.git`
