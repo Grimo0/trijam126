@@ -67,8 +67,6 @@ class Game extends Process {
 		fx = new Fx();
 		hud = new ui.Hud();
 
-		Process.resizeAll();
-
 		root.alpha = 0;
 		start();
 		tw.createS(root.alpha, 1, #if debug 0 #else 1 #end);
