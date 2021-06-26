@@ -3,7 +3,6 @@ import dn.heaps.HParticle;
 
 class Fx extends dn.Process {
 	var game(get, never) : Game; inline function get_game() return Game.ME;
-	var level(get, never) : Level; inline function get_level() return Game.ME.level;
 
 	public var pool : ParticlePool;
 
@@ -127,7 +126,7 @@ class Fx extends dn.Process {
 	}
 
 	inline function collides(p : HParticle, offX = 0., offY = 0.) {
-		return level.hasCollision(Std.int((p.x + offX) / Const.GRID), Std.int((p.y + offY) / Const.GRID));
+		return game.level.hasCollision(Std.int((p.x + offX) / Const.GRID), Std.int((p.y + offY) / Const.GRID));
 	}
 
 	public function flashBangS(c : UInt, a : Float, ?t = 0.1) {
