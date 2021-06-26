@@ -64,7 +64,7 @@ class Main extends dn.Process {
 		delayer.addF(startGame, 1);
 
 		#if debug
-		debug = true;
+		// debug = true;
 		#end
 	}
 
