@@ -100,7 +100,8 @@ class Game extends Process {
 		difficulty = 8;
 
 		// hxd.System.setNativeCursor(Custom(new hxd.Cursor.CustomCursor([hxd.Res.textures.fxCircle0.toBitmap()], 0, 0, 0)));
-		var overrideCursor:hxd.Cursor = Custom(new hxd.Cursor.CustomCursor([hxd.Res.textures.fxCircle0.toBitmap()], 0, 0, 0));
+		var bitmapData = hxd.Res.textures.fxCircle0.toBitmap();
+		var overrideCursor:hxd.Cursor = Custom(new hxd.Cursor.CustomCursor([bitmapData], 0, 0, 0));
 		hxd.System.setCursor = (c) -> {
 			hxd.System.setNativeCursor(overrideCursor);
 		};
