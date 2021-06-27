@@ -54,7 +54,8 @@ class Game extends Process {
 		0x07a0da,
 		0xb60c25,
 		0xb8e5ff,
-		0x8507da
+		0x8507da,
+		0xb700ff
 	];
 	var giver : Character;
 	var receiver : Character;
@@ -93,10 +94,17 @@ class Game extends Process {
 		fx = new Fx();
 		hud = new ui.Hud();
 
-		for (i in 1...8)
+		for (i in 1...9)
 			chars.push(new Character('Char$i'));
 
-		difficulty = 4;
+		difficulty = 8;
+
+		// hxd.System.setNativeCursor(Custom(new hxd.Cursor.CustomCursor([hxd.Res.textures.fxCircle0.toBitmap()], 0, 0, 0)));
+		var overrideCursor:hxd.Cursor = Custom(new hxd.Cursor.CustomCursor([hxd.Res.textures.fxCircle0.toBitmap()], 0, 0, 0));
+		hxd.System.setCursor = (c) -> {
+			hxd.System.setNativeCursor(overrideCursor);
+		};
+		hxd.System.setCursor(Default);
 
 		root.alpha = 0;
 		start();
