@@ -47,8 +47,29 @@ class Game extends Process {
 	var flags : Map<String, Int> = new Map();
 
 	var chars : Array<Character> = new Array();
+	var charColors = [
+		0x61ad52,
+		0xff0076,
+		0xffd700,
+		0x07a0da,
+		0xb60c25,
+		0xb8e5ff
+	];
 	var giver : Character;
 	var receiver : Character;
+
+	var difficulty(default, set) : Int;
+	public function set_difficulty(d) {
+		if (d != difficulty) {
+			for (i in d...difficulty)
+				level.bgCols[i].remove();
+			level.bgCols.resize(d);
+			for (i in difficulty...d)
+				level.bgCols[i] = new h2d.Bitmap(h2d.Tile.fromColor(0xffffff));
+			level.initBgCol();
+		}
+		return difficulty = d;
+	}
 
 	public function new() {
 		super(Main.ME);
@@ -71,7 +92,10 @@ class Game extends Process {
 		fx = new Fx();
 		hud = new ui.Hud();
 
-		chars.push(new Character('tmp'));
+		for (i in 1...6)
+			chars.push(new Character('Char$i'));
+
+		difficulty = 4;
 
 		root.alpha = 0;
 		start();
@@ -99,6 +123,32 @@ class Game extends Process {
 		return f != null ? f : 0;
 	}
 
+	public function getRndCharIdx(?notThem : Array<Character>) {
+		if (notThem == null)
+			return M.rand(chars.length);
+		
+		var rnd = M.rand(chars.length - notThem.length);
+		var i = 0;
+		while (i <= rnd) {
+			for (nC in notThem) {
+				if (chars[i] == nC) {
+					rnd++;
+					break;
+				}
+			}
+			i++;
+		}
+		return rnd;
+	}
+
+	public function isComplete() : Bool {
+		for (c in chars) {
+			if (!c.visible) continue;
+			if (c.face == SAD) return false;
+		}
+		return true;
+	}
+
 	function start() {
 		locked = false;
 		started = false;
@@ -108,6 +158,7 @@ class Game extends Process {
 		level.init();
 
 		for (c in chars) {
+			c.visible = false;
 			level.root.add(c, Const.GAME_LEVEL_ENTITIES);
 		}
 
@@ -118,9 +169,26 @@ class Game extends Process {
 	}
 
 	function startDonation() {
-		giver = chars[0];
-		giver.x = pxWid / 4 - giver.width / 2;
-		giver.y = (pxHei - giver.height) / 2;
+		var notThem = new Array<Character>();
+		for (c in chars) {
+			c.visible = false;
+			c.setScale(1);
+		}
+
+		for (i in 0...difficulty) {
+			var bgCol = level.bgCols[i];
+
+			var idx = getRndCharIdx(notThem);
+			var c = chars[idx];
+			if (c.width > bgCol.width || c.height > bgCol.height)
+				c.setScale(M.fmin(bgCol.width / c.width, bgCol.height / c.height));
+			c.x = bgCol.x + (bgCol.width - c.width * c.scaleX) / 2;
+			c.y = bgCol.y + (bgCol.height - c.height * c.scaleX) / 2;
+			c.visible = true;
+			notThem.push(c);
+			
+			bgCol.color.setColor(0xff << 24 | charColors[idx]);
+		}
 	}
 
 	public function transition(event : String = null, ?onDone : Void->Void) {
@@ -257,6 +325,12 @@ class Game extends Process {
 		if (ImGui.sliderFloat('Const.MAX_CELLS_PER_WIDTH', natArray, -1, 100, '%.0f')) {
 			Const.MAX_CELLS_PER_WIDTH = Std.int(natArray[0]);
 			scroller.setScale(Const.SCALE);
+		}
+
+		natArray[0] = difficulty;
+		if (ImGui.sliderFloat('Difficulty', natArray, 2, chars.length, '%.0f')) {
+			difficulty = Std.int(natArray[0]);
+			startDonation();
 		}
 
 		ImGui.alignTextToFramePadding();

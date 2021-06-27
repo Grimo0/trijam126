@@ -10,7 +10,7 @@ class Character extends Interactive {
 	var id : String;
 	var body : h2d.Bitmap;
 	var faceSpr : HSprite;
-	var face = EFace.HAPPY;
+	public var face = EFace.HAPPY;
 
 	public function new(id : String, ?parent) {
 		super(0, 0, parent);
