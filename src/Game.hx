@@ -100,8 +100,13 @@ class Game extends Process {
 		difficulty = 8;
 
 		// hxd.System.setNativeCursor(Custom(new hxd.Cursor.CustomCursor([hxd.Res.textures.fxCircle0.toBitmap()], 0, 0, 0)));
-		var bitmapData = hxd.Res.textures.fxCircle0.toBitmap();
-		var overrideCursor:hxd.Cursor = Custom(new hxd.Cursor.CustomCursor([bitmapData], 0, 0, 0));
+		var syringeFront = hxd.Res.textures.Syringefront_0.toBitmap();
+		var syringeFill = hxd.Res.textures.Syringefill_0.toBitmap();
+		var syringeHandle = hxd.Res.textures.Syringehandle_0.toBitmap();
+		var cursorBmpData = new hxd.BitmapData(syringeFront.width, syringeFront.height);
+		cursorBmpData.fill(0xbc0f0f);
+		cursorBmpData.drawScaled(0, 0, cursorBmpData.width, cursorBmpData.height, syringeFront, 0, 0, syringeFront.width, syringeFront.height, h2d.BlendMode.None);
+		var overrideCursor:hxd.Cursor = Custom(new hxd.Cursor.CustomCursor([cursorBmpData], 0, 0, 0));
 		hxd.System.setCursor = (c) -> {
 			hxd.System.setNativeCursor(overrideCursor);
 		};
