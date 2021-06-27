@@ -53,7 +53,8 @@ class Game extends Process {
 		0xffd700,
 		0x07a0da,
 		0xb60c25,
-		0xb8e5ff
+		0xb8e5ff,
+		0x8507da
 	];
 	var giver : Character;
 	var receiver : Character;
@@ -92,7 +93,7 @@ class Game extends Process {
 		fx = new Fx();
 		hud = new ui.Hud();
 
-		for (i in 1...6)
+		for (i in 1...8)
 			chars.push(new Character('Char$i'));
 
 		difficulty = 4;
