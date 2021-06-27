@@ -1,5 +1,7 @@
 package en;
 
+import h2d.col.PixelsCollider;
+
 enum EFace {
 	HAPPY;
 	NEUTRAL;
@@ -18,14 +20,16 @@ class Character extends Interactive {
 		this.id = id;
 
 		body = Assets.entities.getBitmap('${id}body', this);
-		body.x = -body.tile.dx;
-		body.y = -body.tile.dy;
 
 		faceSpr = new HSprite(Assets.entities, '${id}face', this);
-		faceSpr.x = -body.tile.dx;
-		faceSpr.y = -body.tile.dy;
-		
-		this.width = body.tile.width;
-		this.height = body.tile.height;
+
+		var collData = Assets.entities.getTile('${id}col');
+		var pxs = collData.getTexture().capturePixels().sub(
+			Std.int(collData.x), Std.int(collData.y),
+			Std.int(collData.width), Std.int(collData.height)
+		);
+		shapeX = -collData.dx;
+		shapeY = -collData.dy;
+		shape = new h2d.col.PixelsCollider(pxs);
 	}
 }
