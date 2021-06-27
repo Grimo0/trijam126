@@ -59,6 +59,8 @@ class Game extends Process {
 	];
 	var giver : Character;
 	var receiver : Character;
+	var syringeRatio = 0.;
+	var syringe = new h2d.Object();
 
 	var difficulty(default, set) : Int;
 	public function set_difficulty(d) {
@@ -97,20 +99,42 @@ class Game extends Process {
 		for (i in 1...9)
 			chars.push(new Character('Char$i'));
 
-		difficulty = 8;
+		difficulty = 2;
 
 		// hxd.System.setNativeCursor(Custom(new hxd.Cursor.CustomCursor([hxd.Res.textures.fxCircle0.toBitmap()], 0, 0, 0)));
-		var syringeFront = hxd.Res.textures.Syringefront_0.toBitmap();
-		var syringeFill = hxd.Res.textures.Syringefill_0.toBitmap();
-		var syringeHandle = hxd.Res.textures.Syringehandle_0.toBitmap();
-		var cursorBmpData = new hxd.BitmapData(syringeFront.width, syringeFront.height);
-		cursorBmpData.fill(0xbc0f0f);
-		cursorBmpData.drawScaled(0, 0, cursorBmpData.width, cursorBmpData.height, syringeFront, 0, 0, syringeFront.width, syringeFront.height, h2d.BlendMode.None);
-		var overrideCursor:hxd.Cursor = Custom(new hxd.Cursor.CustomCursor([cursorBmpData], 0, 0, 0));
+		var syringeFront = Assets.ui.getBitmap('Syringefront');
+		var syringeFill = new h2d.Bitmap(h2d.Tile.fromColor(0xffbc0f0f, 1, 1));
+		var syringeFill = Assets.ui.getBitmap('Syringefill');
+		var syringeHandle = Assets.ui.getBitmap('Syringehandle');
+		syringe.addChild(syringeFill);
+		syringe.addChild(syringeHandle);
+		syringe.addChild(syringeFront);
+		syringe.visible = false;
+		root.addChildAt(syringe, Const.GAME_CURSOR);
+		
+		// cursorBmpData.fill(48, 2, Std.int(filling / 110), 25);
+		function onCursorMove(event : hxd.Event) {
+			if (event.kind != EMove) return;
+			var cursorSize = syringe.getSize();
+			syringe.x = event.relX - 20 + Const.SCALE;
+			syringe.y = event.relY - cursorSize.height / 2;
+			if (syringe.scaleX < 0 && syringe.x < cursorSize.width)
+				syringe.scaleX = -syringe.scaleX;
+			else if (syringe.scaleX > 0 && syringe.x > pxWid - cursorSize.width)
+				syringe.scaleX = -syringe.scaleX;
+		}
+		hxd.Window.getInstance().addEventTarget(onCursorMove);
+
+		// Hide Cursor
 		hxd.System.setCursor = (c) -> {
-			hxd.System.setNativeCursor(overrideCursor);
+			if (c == Default && syringeRatio <= 0.) {
+				hxd.System.setNativeCursor(Default);
+				syringe.visible = false;
+			} else {
+				hxd.System.setNativeCursor(Hide);
+				syringe.visible = true;
+			}
 		};
-		hxd.System.setCursor(Default);
 
 		root.alpha = 0;
 		start();
@@ -190,20 +214,27 @@ class Game extends Process {
 			c.setScale(1);
 		}
 
+		var charScales = 1.;
+		var maxWidth = level.bgCols[0].width - 40;
+		var maxHeight = level.bgCols[0].height - 40;
 		for (i in 0...difficulty) {
 			var bgCol = level.bgCols[i];
 
 			var idx = getRndCharIdx(notThem);
 			var c = chars[idx];
-			if (c.width > bgCol.width || c.height > bgCol.height)
-				c.setScale(M.fmin(bgCol.width / c.width, bgCol.height / c.height));
-			c.x = bgCol.x + (bgCol.width - c.width * c.scaleX) / 2;
-			c.y = bgCol.y + (bgCol.height - c.height * c.scaleX) / 2;
+			var cSize = c.getSize();
+			if (cSize.width > maxWidth || cSize.height > maxHeight) {
+				charScales = M.fmin(maxWidth / cSize.width, maxHeight / cSize.height);
+				c.setScale(charScales);
+			}
+			c.x = bgCol.x + (bgCol.width - cSize.width * c.scaleX) / 2;
+			c.y = bgCol.y + (bgCol.height - cSize.height * c.scaleX) / 2;
 			c.visible = true;
 			notThem.push(c);
 			
 			bgCol.color.setColor(0xff << 24 | charColors[idx]);
 		}
+		syringe.setScale(charScales);
 	}
 
 	public function transition(event : String = null, ?onDone : Void->Void) {

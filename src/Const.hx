@@ -67,6 +67,7 @@ class Const {
 	public static var MAIN_LAYER_UI = ++_inc;
 
 	public static var GAME_SCROLLER = _inc = 0;
+	public static var GAME_CURSOR = ++_inc;
 	public static var GAME_DEBUG = ++_inc;
 	public static var GAME_CINEMATIC = ++_inc;
 
