@@ -54,7 +54,7 @@
 				"$haxe-trace"
 			],
 			"group": "build",
-			"command": "haxelib run redistHelper hl.dx.hxml hl.sdl.hxml -p blood_donation",
+			"command": "haxelib run redistHelper hl.dx.hxml -p blood-donation",
 			"detail": "Create a package in the redist folder."
 		},
 		{
@@ -102,7 +102,7 @@
 				"$haxe-trace"
 			],
 			"group": "build",
-			"command": "haxelib run redistHelper js.hxml -zip -p blood_donation",
+			"command": "haxelib run redistHelper js.hxml -zip -p blood-donation",
 			"detail": "Create a package in the redist folder."
 		},
 		{
@@ -163,7 +163,7 @@
 		{
 			"label": "Butler dx",
 			"type": "shell",
-			"command": "butler push redist/directx/blood_donation Grim0/blood_donation:win-32",
+			"command": "butler push redist/directx/blood-donation Grim0/blood-donation:win-32",
 			"presentation": {
 				"reveal": "always",
 				"revealProblems": "onProblem",
@@ -180,7 +180,7 @@
 		{
 			"label": "Butler sdl",
 			"type": "shell",
-			"command": "butler push redist/opengl_win/blood_donation Grim0/blood_donation:win-32-sdl",
+			"command": "butler push redist/opengl_win/blood-donation Grim0/blood-donation:win-32-sdl",
 			"presentation": {
 				"reveal": "always",
 				"revealProblems": "onProblem",
@@ -197,7 +197,7 @@
 		{
 			"label": "Butler js",
 			"type": "shell",
-			"command": "butler push redist/js.zip Grim0/blood_donation:js",
+			"command": "butler push redist/js.zip Grim0/blood-donation:js",
 			"presentation": {
 				"reveal": "always",
 				"revealProblems": "onProblem",
