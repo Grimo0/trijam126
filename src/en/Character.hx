@@ -19,6 +19,22 @@ class Character extends Interactive {
 	public var state(default, set) = EState.Happy;
 	public function set_state(s : EState) {
 		faceSpr.setFrame(s.getIndex());
+		if (!game.locked) {
+			switch s {
+				case Happy: 
+					if (Math.random() < 0.5)
+						Assets.SLIB.Happy_1(.6);
+					else
+						Assets.SLIB.Happy_2(1);
+				case Neutral: 
+					Assets.SLIB.Neutral_2(1);
+				case Sad: 
+					if (Math.random() < 0.5)
+						Assets.SLIB.Sad_1(.6);
+					else
+						Assets.SLIB.Sad_2(1);
+			}
+		}
 		return state = s;
 	}
 

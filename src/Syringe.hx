@@ -35,8 +35,8 @@ class Syringe extends h2d.Object {
 		if (s == null) {
 			if (state == Filling) {
 				if (ratio > fillGoalMax) {
-					game.gameOver();
 					game.giver.state = Sad;
+					game.gameOver();
 				} else {
 					if (ratio < fillGoalMin)
 						ratio = 0;
@@ -45,7 +45,7 @@ class Syringe extends h2d.Object {
 				}
 			} else if (state == Giving) {
 				if (ratio <= 0) {
-					game.receiver.state = EState.createByIndex(game.receiver.state.getIndex() - 1);
+					game.receiver.state = Happy;
 					game.giver = null;
 					game.receiver = null;
 					game.checkComplete();
