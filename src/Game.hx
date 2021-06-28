@@ -1,3 +1,4 @@
+import ui.EndGameMenu;
 import en.Character;
 import en.Entity;
 import dn.Process;
@@ -33,8 +34,7 @@ class Game extends Process {
 			ca.unlock();
 		return locked = l;
 	}
-	public var started(default, null) = false;
-	
+
 	public var pxWid(get, never) : Int;
 	function get_pxWid() return M.ceil(w() / Const.SCALE);
 
@@ -46,25 +46,16 @@ class Game extends Process {
 
 	var flags : Map<String, Int> = new Map();
 
-	var chars : Array<Character> = new Array();
-	var charColors = [
-		0x61ad52,
-		0xff0076,
-		0xffd700,
-		0x07a0da,
-		0xb60c25,
-		0xb8e5ff,
-		0x8507da,
-		0xb700ff
-	];
-	var giver : Character;
-	var receiver : Character;
-	var syringeRatio = 0.;
-	var syringe = new h2d.Object();
+	public var chars : Array<Character> = new Array();
+	final charColors = [0x61ad52, 0xff0076, 0xffd700, 0x07a0da, 0xb60c25, 0xb8e5ff, 0x8507da, 0xb700ff];
+	public var giver : Character;
+	public var receiver : Character;
+	public var syringe : Syringe;
 
-	var difficulty(default, set) : Int;
+	var difficulty(default, set) = 0;
 	public function set_difficulty(d) {
 		if (d != difficulty) {
+			if (d > chars.length) d = chars.length;
 			for (i in d...difficulty)
 				level.bgCols[i].remove();
 			level.bgCols.resize(d);
@@ -99,40 +90,36 @@ class Game extends Process {
 		for (i in 1...9)
 			chars.push(new Character('Char$i'));
 
-		difficulty = 2;
-
 		// hxd.System.setNativeCursor(Custom(new hxd.Cursor.CustomCursor([hxd.Res.textures.fxCircle0.toBitmap()], 0, 0, 0)));
-		var syringeFront = Assets.ui.getBitmap('Syringefront');
-		var syringeFill = new h2d.Bitmap(h2d.Tile.fromColor(0xffbc0f0f, 1, 1));
-		var syringeFill = Assets.ui.getBitmap('Syringefill');
-		var syringeHandle = Assets.ui.getBitmap('Syringehandle');
-		syringe.addChild(syringeFill);
-		syringe.addChild(syringeHandle);
-		syringe.addChild(syringeFront);
+		syringe = new Syringe();
 		syringe.visible = false;
 		root.addChildAt(syringe, Const.GAME_CURSOR);
-		
-		// cursorBmpData.fill(48, 2, Std.int(filling / 110), 25);
+
 		function onCursorMove(event : hxd.Event) {
-			if (event.kind != EMove) return;
+			if (isPaused()) return;
+			if (syringe.state != null) {
+				if (event.kind == ERelease)
+					syringe.state = null;
+				return;
+			}
+			if (event.kind != EMove || syringe.state != null) return;
+
 			var cursorSize = syringe.getSize();
-			syringe.x = event.relX - 20 + Const.SCALE;
+			syringe.x = event.relX;
 			syringe.y = event.relY - cursorSize.height / 2;
-			if (syringe.scaleX < 0 && syringe.x < cursorSize.width)
+			if (syringe.scaleX < 0 && syringe.x <  1.5 * cursorSize.width)
 				syringe.scaleX = -syringe.scaleX;
-			else if (syringe.scaleX > 0 && syringe.x > pxWid - cursorSize.width)
+			else if (syringe.scaleX > 0 && syringe.x > pxWid -  1.5 * cursorSize.width)
 				syringe.scaleX = -syringe.scaleX;
 		}
 		hxd.Window.getInstance().addEventTarget(onCursorMove);
 
 		// Hide Cursor
 		hxd.System.setCursor = (c) -> {
-			if (c == Default && syringeRatio <= 0.) {
+			if (!syringe.visible || ui.Modal.hasAny()) {
 				hxd.System.setNativeCursor(Default);
-				syringe.visible = false;
 			} else {
 				hxd.System.setNativeCursor(Hide);
-				syringe.visible = true;
 			}
 		};
 
@@ -165,7 +152,7 @@ class Game extends Process {
 	public function getRndCharIdx(?notThem : Array<Character>) {
 		if (notThem == null)
 			return M.rand(chars.length);
-		
+
 		var rnd = M.rand(chars.length - notThem.length);
 		var i = 0;
 		while (i <= rnd) {
@@ -183,14 +170,20 @@ class Game extends Process {
 	public function isComplete() : Bool {
 		for (c in chars) {
 			if (!c.visible) continue;
-			if (c.face == SAD) return false;
+			if (c.state == Sad) return false;
 		}
 		return true;
 	}
 
+	public inline function checkComplete() {
+		if (isComplete()) success();
+	}
+
 	function start() {
 		locked = false;
-		started = false;
+
+		difficulty = 2;
+		syringe.reset();
 
 		scroller.removeChildren();
 
@@ -213,7 +206,11 @@ class Game extends Process {
 			c.visible = false;
 			c.setScale(1);
 		}
+		giver = null;
+		receiver = null;
 
+		var nbReceiver = Std.int(difficulty / 2);
+		var nbGiver = difficulty - nbReceiver;
 		var charScales = 1.;
 		var maxWidth = level.bgCols[0].width - 40;
 		var maxHeight = level.bgCols[0].height - 40;
@@ -231,24 +228,49 @@ class Game extends Process {
 			c.y = bgCol.y + (bgCol.height - cSize.height * c.scaleX) / 2;
 			c.visible = true;
 			notThem.push(c);
-			
+
+			if (M.rand(nbReceiver + nbGiver) < nbReceiver) {
+				c.state = Sad;
+				nbReceiver--;
+			} else {
+				c.state = Happy;
+				nbGiver--;
+			}
+
 			bgCol.color.setColor(0xff << 24 | charColors[idx]);
 		}
 		syringe.setScale(charScales);
 	}
 
+	public function gameOver() {
+		locked = true;
+		new ui.EndGameMenu(true);
+		delayer.addF(start, 1);
+	}
+
+	public function success() {
+		locked = true;
+		if (difficulty == chars.length) {
+			new ui.EndGameMenu(false, true);
+			delayer.addF(start, 1);
+		} else {
+			new ui.EndGameMenu(false);
+			delayer.addF(() -> {
+				transition(() -> difficulty += 2);
+			}, 1);
+		}
+	}
+
 	public function transition(event : String = null, ?onDone : Void->Void) {
 		locked = true;
 
-		Main.ME.tw.createS(root.alpha, 0, #if debug 0 #else 1 #end).onEnd = function() {
-			startDonation();
-
-			Main.ME.tw.createS(root.alpha, 1, #if debug 0 #else 1 #end);
-
+		Main.ME.tw.createS(root.alpha, 0, #if debug 0 #else .3 #end).onEnd = function() {
 			if (onDone != null)
 				onDone();
-			
+
+			startDonation();
 			locked = false;
+			Main.ME.tw.createS(root.alpha, 1, #if debug 0 #else .3 #end);
 		}
 	}
 
@@ -331,12 +353,6 @@ class Game extends Process {
 	/** Main loop **/
 	override function update() {
 		super.update();
-
-		if (!started) {
-			if (ca.startPressed()) {
-				started = true;
-			}
-		}
 
 		for (e in Entity.ALL)
 			if (!e.destroyed)

@@ -1,18 +1,26 @@
 package en;
 
+import hxd.Event;
 import h2d.col.PixelsCollider;
 
-enum EFace {
-	HAPPY;
-	NEUTRAL;
-	SAD;
+enum EState {
+	Happy;
+	Neutral;
+	Sad;
 }
 
+@:access(Game)
 class Character extends Interactive {
+	var game(get, never) : Game; inline function get_game() return Game.ME;
+
 	var id : String;
 	var body : h2d.Bitmap;
 	var faceSpr : HSprite;
-	public var face = EFace.HAPPY;
+	public var state(default, set) = EState.Happy;
+	public function set_state(s : EState) {
+		faceSpr.setFrame(s.getIndex());
+		return state = s;
+	}
 
 	public function new(id : String, ?parent) {
 		super(0, 0, parent);
@@ -31,5 +39,31 @@ class Character extends Interactive {
 		shapeX = -collData.dx;
 		shapeY = -collData.dy;
 		shape = new h2d.col.PixelsCollider(pxs);
+	}
+
+	override function onOver(e:Event) {
+		if (game.syringe.ratio > 0) return;
+		game.syringe.visible = false;
+		if (game.syringe.ratio <= 0) {
+			if (state != Happy) return;
+			game.syringe.visible = true;
+		} else if (state == Sad)
+			game.syringe.visible = true;
+	}
+
+	override function onOut(e:Event) {
+		if (game.syringe.visible && game.syringe.ratio <= 0)
+			game.syringe.visible = false;
+	}
+
+	override function onPush(e:Event) {
+		if (game.syringe.ratio <= 0) {
+			if (state != Happy) return;
+			game.syringe.state = Filling;
+			game.giver = this;
+		} else if (state == Sad) {
+			game.syringe.state = Giving;
+			game.receiver = this;
+		}
 	}
 }
