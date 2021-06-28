@@ -1,3 +1,4 @@
+import dn.heaps.Sfx;
 import en.Character.EState;
 import h2d.RenderContext;
 
@@ -15,6 +16,8 @@ class Syringe extends h2d.Object {
 	final fillGoalMax = 0.65;
 	final fillWidth = 120;
 
+	var sfx : Sfx;
+
 	var ratioBefore = 0.;
 	var ratio(default, set) = 0.;
 	public function set_ratio(r : Float) {
@@ -24,6 +27,11 @@ class Syringe extends h2d.Object {
 	}
 	var state(default, set) : ESyringe;
 	public function set_state(s : ESyringe) {
+		if (sfx != null){
+			sfx.stop();
+			sfx = null;
+		}
+
 		if (s == null) {
 			if (state == Filling) {
 				if (ratio > fillGoalMax) {
@@ -45,8 +53,12 @@ class Syringe extends h2d.Object {
 					ratio = ratioBefore;
 				}
 			}			
-		} else if (s == Giving)
+		} else if (s == Filling) {
+			sfx = Assets.SLIB.SyringeFill(1);
+		} else if (s == Giving) {
 			ratioBefore = ratio;
+			sfx = Assets.SLIB.SyringeEmpty(1);
+		}
 		return state = s;
 	}
 
