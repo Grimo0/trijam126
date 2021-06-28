@@ -4,10 +4,9 @@ class Window extends dn.Process {
 	public var win : h2d.Flow;
 
 	public function new() {
-		super(Game.ME);
+		super(Main.ME);
 
-		createRootInLayers(Game.ME.root, Const.MAIN_LAYER_UI);
-		root.filter = new h2d.filter.ColorMatrix(); // force pixel perfect rendering
+		createRootInLayers(Main.ME.root, Const.MAIN_LAYER_UI);
 
 		win = new h2d.Flow(root);
 		win.backgroundTile = h2d.Tile.fromColor(0xffffff, 32, 32);
